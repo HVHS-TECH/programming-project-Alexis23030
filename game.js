@@ -3,18 +3,20 @@
 // Main Game Function
 // Alexis Hood
 /*******************************************************/
-let width = 800
-let height = 800
+
 /*******************************************************/
 // setup()
 /*******************************************************/
 function setup() {
+    globalThis.width = windowWidth/2;
+    globalThis.height = windowWidth/2;
     let cnv = createCanvas(width, height);
-    cnv.position((windowWidth / 2) - 400, (windowHeight / 2) - 400)
+    cnv.position((windowWidth / 2) - (width/2), (windowHeight / 2) - (height/2))
     windowDraw();
     createPlayer1();
     createPlayer2();
 }
+
 
 /*******************************************************/
 // windowDraw()
@@ -30,12 +32,14 @@ function windowDraw() {
 	wallBot.color = 'black';
 }
 
+
 /*******************************************************/
 // createPlayer1()
 /*******************************************************/
 function createPlayer1() {
     //stuff
 }
+
 
 /*******************************************************/
 // createPlayer2()
@@ -45,17 +49,12 @@ function createPlayer2() {
 }
 
 
-
-
-
-
 /*******************************************************/
 // draw()
 /*******************************************************/
 function draw() {
     background('white');
 }
-
 
 
 /*******************************************************/
