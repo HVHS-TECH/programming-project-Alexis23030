@@ -18,40 +18,27 @@ function preload() {
 // setup()
 /*******************************************************/
 function setup() {
-    globalThis.width = windowWidth / 2;
-    globalThis.height = windowWidth / 2;
+    globalThis.width = 600;
+    globalThis.height = 600;
     let cnv = createCanvas(width, height);
     cnv.position((windowWidth / 2) - (width / 2), (windowHeight / 2) - (height / 2))
-    //windowDraw();
     createPlayer1();
     createPlayer2();
+    projectileGroup = new Group();
+
 }
-
-
-/*******************************************************/
-// windowDraw()
-/*******************************************************/
-function windowDraw() {
-    let wallLH = new Sprite(0, height / 2, 8, height, 'k');
-    wallLH.color = 'black';
-    let wallRH = new Sprite(width, height / 2, 8, height, 'k');
-    wallRH.color = 'black';
-
-    let wallTop = new Sprite(width / 2, 0, width, 8, 'k');
-    wallTop.color = 'black';
-    let wallBot = new Sprite(width / 2, height, width, 8, 'k');
-    wallBot.color = 'black';
-}
-
 
 /*******************************************************/
 // createPlayer1()
 /*******************************************************/
 function createPlayer1() {
-    player1 = new Sprite(width - 100, height - 100, 50, 50, 'k')
+    player1 = new Sprite(width - 100, height - 100, 30, 30, 'd')
     player1.image = (player1img);
     player1.scale = 50 / player1img.width;
     player1.direction = -90;
+    player1.collider = 'd'
+    player1.w = 30;
+    player1.h = 30;
 }
 
 
@@ -59,10 +46,12 @@ function createPlayer1() {
 // createPlayer2()
 /*******************************************************/
 function createPlayer2() {
-    player2 = new Sprite(100, 100, 50, 50, 'k')
+    player2 = new Sprite(100, 100, 30, 30, 'd')
     player2.image = (player2img);
     player2.scale = 50 / player2img.width;
     player2.direction = -90;
+    player2.w = 30;
+    player2.h = 30;
 }
 
 /*******************************************************/
@@ -117,6 +106,32 @@ function player2Movement() {
     }
 }
 
+/*******************************************************/
+// createProjectile()
+/*******************************************************/
+async function createProjectile(_repeats) {
+    for (i = 0; i < _repeats; i++) {
+        projectile = new Sprite(player1.x, player1.y, 2, 4, 'd')
+        projectile.direction = player1.direction
+        projectile.rotation = player1.rotation
+        projectile.speed = 8;
+        projectile.color = 'black';
+        projectileGroup.add(projectile);
+        if (_repeats > 1) {
+            await delay(random(10, 100));
+        }
+    }
+
+}
+
+/*******************************************************/
+// removeProjectile()
+/*******************************************************/
+function removeProjectile(_projectile) {
+    console.log("blah")
+    _projectile.remove()
+}
+
 
 
 /*******************************************************/
@@ -127,6 +142,23 @@ function draw() {
     player1Movement();
     player2Movement();
 
+    if (kb.pressed('space')) {
+        createProjectile(1);
+    }
+
+    projectileGroup.forEach(sprite => {
+        if (sprite.x < 0) {
+            sprite.remove()
+        } else if (sprite.x > width) {
+            sprite.remove()
+        } else if (sprite.y < 0) {
+            sprite.remove()
+        } else if (sprite.y > height) {
+            sprite.remove()
+        }
+    });
+
+    projectileGroup.collides(player2, removeProjectile);
 }
 
 
