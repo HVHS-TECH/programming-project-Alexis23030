@@ -158,7 +158,8 @@ function draw() {
         }
     });
 
-    projectileGroup.collides(player2, removeProjectile);
+    projectileGroup.overlaps(player2, removeProjectile);
+    projectileGroup.overlaps(player1);
 }
 
 
