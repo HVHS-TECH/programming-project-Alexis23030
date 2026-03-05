@@ -4,7 +4,7 @@
 // Alexis Hood
 /*******************************************************/
 
-
+let score = 100;
 /*******************************************************/
 // preload()
 /*******************************************************/
@@ -20,13 +20,24 @@ function preload() {
 function setup() {
     globalThis.width = 600;
     globalThis.height = 600;
-    let cnv = createCanvas(width, height);
+    let cnv = createCanvas(width, height+50);
     cnv.position((windowWidth / 2) - (width / 2), (windowHeight / 2) - (height / 2))
+    windowSetup();
     createPlayer1();
     createPlayer2();
     projectileGroup = new Group();
 
 }
+
+
+function windowSetup() {
+    topBar = new Sprite(width/2, 25, width, 50)
+    topBar.color = 'black';
+    stroke(0);
+    text("Hello World", 50, 50);
+
+}
+
 
 /*******************************************************/
 // createPlayer1()
@@ -46,7 +57,7 @@ function createPlayer1() {
 // createPlayer2()
 /*******************************************************/
 function createPlayer2() {
-    player2 = new Sprite(100, 100, 30, 30, 'd')
+    player2 = new Sprite(100, 150, 30, 30, 'd')
     player2.image = (player2img);
     player2.scale = 50 / player2img.width;
     player2.direction = -90;
@@ -128,7 +139,8 @@ async function createProjectile(_repeats) {
 // removeProjectile()
 /*******************************************************/
 function removeProjectile(_projectile) {
-    console.log("blah")
+    score = score - 1
+    console.log("Score: " + score)
     _projectile.remove()
 }
 
@@ -160,9 +172,21 @@ function draw() {
 
     projectileGroup.overlaps(player2, removeProjectile);
     projectileGroup.overlaps(player1);
+
+    if (player1.collides(player2)){
+        reset(score)
+}
 }
 
-
+async function reset(_score){
+    console.log("reset")
+    allSprites.remove()
+    background('white')
+    score = _score
+    createPlayer1();
+    createPlayer2();
+    projectileGroup = new Group();
+}
 /*******************************************************/
 //  END OF game.js
 /*******************************************************/
