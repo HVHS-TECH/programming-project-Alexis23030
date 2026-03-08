@@ -4,7 +4,8 @@
 // Alexis Hood
 /*******************************************************/
 
-let score = 100;
+let score = 50;
+
 /*******************************************************/
 // preload()
 /*******************************************************/
@@ -20,21 +21,14 @@ function preload() {
 function setup() {
     globalThis.width = 600;
     globalThis.height = 600;
-    let cnv = createCanvas(width, height+50);
+    let cnv = createCanvas(width, height + 50);
     cnv.position((windowWidth / 2) - (width / 2), (windowHeight / 2) - (height / 2))
-    windowSetup();
+    topBar = new Sprite(width / 2, 25, width, 50, 'n')
+    topBar.color = 'black';
+    topBar.layer = 10;
     createPlayer1();
     createPlayer2();
     projectileGroup = new Group();
-
-}
-
-
-function windowSetup() {
-    topBar = new Sprite(width/2, 25, width, 50)
-    topBar.color = 'black';
-    stroke(0);
-    text("Hello World", 50, 50);
 
 }
 
@@ -47,9 +41,11 @@ function createPlayer1() {
     player1.image = (player1img);
     player1.scale = 50 / player1img.width;
     player1.direction = -90;
+    player1.rotation = 0;
     player1.collider = 'd'
     player1.w = 30;
     player1.h = 30;
+    player1.layer = 5;
 }
 
 
@@ -61,8 +57,11 @@ function createPlayer2() {
     player2.image = (player2img);
     player2.scale = 50 / player2img.width;
     player2.direction = -90;
+    player2.rotation = 0;
+    player2.collider = 'd'
     player2.w = 30;
     player2.h = 30;
+    player2.layer = 5;
 }
 
 /*******************************************************/
@@ -79,15 +78,15 @@ function player1Movement() {
         player1.rotation = player1.rotation + 2
     }
 
-    //Wrapping Code
+    //Wraps the player if they go off screen
     if (player1.x < 0) {
         player1.x = width;
     } else if (player1.x > width) {
         player1.x = 0;
-    } else if (player1.y < 0) {
+    } else if (player1.y < 50) {
         player1.y = height;
     } else if (player1.y > height) {
-        player1.y = 0;
+        player1.y = 50;
     }
 }
 
@@ -105,34 +104,29 @@ function player2Movement() {
         player2.rotation = player2.rotation + 2
     }
 
-    //Wrapping Code
+    //Wraps the player if they go off screen
     if (player2.x < 0) {
         player2.x = width;
     } else if (player2.x > width) {
         player2.x = 0;
-    } else if (player2.y < 0) {
+    } else if (player2.y < 50) {
         player2.y = height;
     } else if (player2.y > height) {
-        player2.y = 0;
+        player2.y = 50;
     }
 }
 
 /*******************************************************/
 // createProjectile()
 /*******************************************************/
-async function createProjectile(_repeats) {
-    for (i = 0; i < _repeats; i++) {
-        projectile = new Sprite(player1.x, player1.y, 2, 4, 'd')
+async function createProjectile() {
+        let projectile = new Sprite(player1.x, player1.y, 2, 4, 'd')
         projectile.direction = player1.direction
         projectile.rotation = player1.rotation
         projectile.speed = 8;
         projectile.color = 'black';
+        projectile.layer = 2;
         projectileGroup.add(projectile);
-        if (_repeats > 1) {
-            await delay(random(10, 100));
-        }
-    }
-
 }
 
 /*******************************************************/
@@ -144,6 +138,31 @@ function removeProjectile(_projectile) {
     _projectile.remove()
 }
 
+/*******************************************************/
+// scoreDisplay()
+/*******************************************************/
+function scoreDisplay() {
+    topBar.text = "Score: " + score;
+    topBar.textColor = 'white';
+    topBar.textSize = '20';
+}
+
+
+/*******************************************************/
+//  reset(_score)
+/*******************************************************/
+function reset(_score) {
+    console.log("reset")
+    allSprites.remove()
+    background('white')
+    topBar = new Sprite(width / 2, 25, width, 50, 'n')
+    topBar.color = 'black';
+    topBar.layer = 10;
+    score = _score
+    createPlayer1();
+    createPlayer2();
+    projectileGroup = new Group();
+}
 
 
 /*******************************************************/
@@ -155,7 +174,7 @@ function draw() {
     player2Movement();
 
     if (kb.pressed('space')) {
-        createProjectile(1);
+        createProjectile();
     }
 
     projectileGroup.forEach(sprite => {
@@ -173,20 +192,24 @@ function draw() {
     projectileGroup.overlaps(player2, removeProjectile);
     projectileGroup.overlaps(player1);
 
-    if (player1.collides(player2)){
+    if (player1.collides(player2)) {
         reset(score)
-}
+    }
+    scoreDisplay();
 }
 
-async function reset(_score){
-    console.log("reset")
-    allSprites.remove()
-    background('white')
-    score = _score
-    createPlayer1();
-    createPlayer2();
-    projectileGroup = new Group();
-}
+
+/*
+TO DO:
+ADD TIMER
+ADD GAME END
+ADD NICE EXPLOSIONS
+RESTART FROM GAMESCREEN
+*/
+
+
+
+
 /*******************************************************/
 //  END OF game.js
 /*******************************************************/
