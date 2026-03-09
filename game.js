@@ -55,6 +55,11 @@ function setup() {
     gameName2.textColor = "#4b965b";
     gameName2.textSize = 30;
 
+    instructions = new Sprite(width/2, 400, 1200, 1200)
+    instructions.scale = 0.25;
+    instructions.text = 'FIGHTERS';
+    instructions.textColor = "#4b965b";
+    instructions.textSize = 30;
     //Keybinds / instructions
 }
 
@@ -93,12 +98,14 @@ function gameOverSetup(_isAlive) {
         deadMessage.text = 'Player 1 Loses!';
         deadMessage.textColor = "#fdeeee";
         deadMessage.textSize = 30;
+
         deadMessage2 = new Sprite((width / 2), 200, 1200, 300, 'n');
         deadMessage2.image = (redButton);
         deadMessage2.scale = 0.25;
         deadMessage2.text = 'You Crashed';
         deadMessage2.textColor = "#fdeeee";
         deadMessage2.textSize = 30;
+        
         restartButton = new Sprite((width / 2) - 100, (height / 2), 1200, 300, 'k');
         restartButton.image = (greenButton);
         restartButton.scale = 0.25;
@@ -106,7 +113,6 @@ function gameOverSetup(_isAlive) {
         restartButton.textColor = "#4b965b";
         restartButton.textSize = 30;
     } else if (_isAlive == "alive") {
-        //Player 1 Won, it took you [timer] secs to eliminate player 2
         aliveMessage = new Sprite((width / 2) - 100, 100, 1200, 300, 'n');
         aliveMessage.image = (redButton);
         aliveMessage.scale = 0.25;
