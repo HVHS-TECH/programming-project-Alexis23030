@@ -17,10 +17,10 @@ let buttonAnimation = "small";
 /*******************************************************/
 function preload() {
     console.log("Preload");
-    player1img = loadImage('../images/player1.png');
-    player2img = loadImage('../images/player2.png');
-    greenButton = loadImage('../images/greenButton.png')
-    redButton = loadImage('../images/redButton.png')
+    player1img = loadImage('images/player1.png');
+    player2img = loadImage('images/player2.png');
+    greenButton = loadImage('images/greenButton.png')
+    redButton = loadImage('images/redButton.png')
 }
 
 
