@@ -5,7 +5,7 @@
 /*******************************************************/
 
 let timerScore = 0;
-let maxLives = 30;
+let maxLives = 20;
 let lives = maxLives;
 let gameMode = 1;
 let width = 600;
@@ -19,7 +19,8 @@ function preload() {
     console.log("Preload");
     player1img = loadImage('../images/player1.png');
     player2img = loadImage('../images/player2.png');
-    buttonimg = loadImage('../images/startButton.png')
+    greenButton = loadImage('../images/greenButton.png')
+    redButton = loadImage('../images/redButton.png')
 }
 
 
@@ -34,32 +35,26 @@ function setup() {
     //Start Screen Setup:
     console.log("Start Screen")
     startButton = new Sprite(width / 2, height / 2, 1200, 300, 'k');
-    startButton.image = (buttonimg);
+    startButton.image = (greenButton);
     startButton.scale = 0.25;
-    startButton.text = 'START';
+    startButton.text = "START \u25B6";
     startButton.textColor = "#4b965b";
     startButton.textSize = 30;
 
     gameName1 = new Sprite(-100, 100, 1200, 300, 'k');
-    gameName1.image = (buttonimg);
+    gameName1.image = (greenButton);
     gameName1.scale = 0.25;
     gameName1.text = 'JET';
     gameName1.textColor = "#4b965b";
     gameName1.textSize = 30;
-    // x was 100 x was 200
 
     gameName2 = new Sprite(700, 200, 1200, 300, 'k');
-    gameName2.image = (buttonimg);
+    gameName2.image = (greenButton);
     gameName2.scale = 0.25;
     gameName2.text = 'FIGHTERS';
     gameName2.textColor = "#4b965b";
     gameName2.textSize = 30;
 
-
-
-
-    //Name of game - flys in gameName1 gameName2
-    //Start Button - pulsating startButton
     //Keybinds / instructions
 }
 
@@ -88,15 +83,56 @@ function gameSetup() {
 // gameOverSetup()
 /*******************************************************/
 function gameOverSetup(_isAlive) {
-    if (_isAlive == "dead") {
-        //Player 1 Lose! You Crashed
-    } else if (_isAlive == "alive") {
-        //Player 1 Won, it took you [timer] secs to eliminate player 2
-    }
-    //Replay button
     console.log("Game Over Screen")
     allSprites.remove()
-    circle = new Sprite(50, 50, 50);
+    buttonAnimation = "small"
+    if (_isAlive == "dead") {
+        deadMessage = new Sprite((width / 2) - 100, 100, 1200, 300, 'n');
+        deadMessage.image = (redButton);
+        deadMessage.scale = 0.25;
+        deadMessage.text = 'Player 1 Loses!';
+        deadMessage.textColor = "#fdeeee";
+        deadMessage.textSize = 30;
+        deadMessage2 = new Sprite((width / 2), 200, 1200, 300, 'n');
+        deadMessage2.image = (redButton);
+        deadMessage2.scale = 0.25;
+        deadMessage2.text = 'You Crashed';
+        deadMessage2.textColor = "#fdeeee";
+        deadMessage2.textSize = 30;
+        restartButton = new Sprite((width / 2) - 100, (height / 2), 1200, 300, 'k');
+        restartButton.image = (greenButton);
+        restartButton.scale = 0.25;
+        restartButton.text = "REPLAY \u25B6";
+        restartButton.textColor = "#4b965b";
+        restartButton.textSize = 30;
+    } else if (_isAlive == "alive") {
+        //Player 1 Won, it took you [timer] secs to eliminate player 2
+        aliveMessage = new Sprite((width / 2) - 100, 100, 1200, 300, 'n');
+        aliveMessage.image = (redButton);
+        aliveMessage.scale = 0.25;
+        aliveMessage.text = 'It took you:';
+        aliveMessage.textColor = "#fdeeee";
+        aliveMessage.textSize = 30;
+        aliveMessage2 = new Sprite((width / 2), 200, 1200, 300, 'n');
+        aliveMessage2.image = (redButton);
+        aliveMessage2.scale = 0.25;
+        aliveMessage2.text = timerScore + ' secs';
+        aliveMessage2.textColor = "#fdeeee";
+        aliveMessage2.textSize = 30;
+        aliveMessage3 = new Sprite((width / 2) + 100, 300, 1200, 300, 'n');
+        aliveMessage3.image = (redButton);
+        aliveMessage3.scale = 0.25;
+        aliveMessage3.text = 'To eliminate player 2!';
+        aliveMessage3.textColor = "#fdeeee";
+        aliveMessage3.textSize = 30;
+        restartButton = new Sprite((width / 2) - 100, (height / 2) + 100, 1200, 300, 'k');
+        restartButton.image = (greenButton);
+        restartButton.scale = 0.25;
+        restartButton.text = "REPLAY \u25B6";
+        restartButton.textColor = "#4b965b";
+        restartButton.textSize = 30;
+    }
+
 }
 
 /*******************************************************/
@@ -215,7 +251,7 @@ function livesDisplay() {
     livesBar.textColor = 'white';
     livesBar.textSize = 20;
     timerScore = Math.floor((frameCount / 60) - startFrame)
-    timerBar.text = timerScore;
+    timerBar.text = 'Time: ' + timerScore;
     timerBar.textColor = "White";
     timerBar.textSize = 20;
 }
@@ -287,7 +323,7 @@ function startScreen() {
     if (startButton.scale < 0.28 && buttonAnimation == "small") {
         startButton.scale = startButton.scale + 0.0006
         //Start Button - pulsating startButton
-    } else if (startButton.scale > 0.25){
+    } else if (startButton.scale > 0.25) {
         startButton.scale = startButton.scale - 0.0006
         buttonAnimation = "big"
     } else {
@@ -301,11 +337,21 @@ function startScreen() {
 /*******************************************************/
 function gameOver() {
     background('white');
-    if (circle.mouse.pressed()) {
+    if (restartButton.mouse.pressed()) {
         console.log("Game Restarting");
         gameSetup(maxLives);
         gameMode = 2;
         return
+    }
+    // Restart Animation
+    if (restartButton.scale < 0.28 && buttonAnimation == "small") {
+        restartButton.scale = restartButton.scale + 0.0006
+        //Start Button - pulsating startButton
+    } else if (restartButton.scale > 0.25) {
+        restartButton.scale = restartButton.scale - 0.0006
+        buttonAnimation = "big"
+    } else {
+        buttonAnimation = "small";
     }
 }
 
