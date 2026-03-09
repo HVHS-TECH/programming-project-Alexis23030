@@ -10,6 +10,7 @@ let lives = maxLives;
 let gameMode = 1;
 let width = 600;
 let height = 600;
+let buttonAnimation = "small";
 
 /*******************************************************/
 // preload()
@@ -18,6 +19,7 @@ function preload() {
     console.log("Preload");
     player1img = loadImage('../images/player1.png');
     player2img = loadImage('../images/player2.png');
+    buttonimg = loadImage('../images/startButton.png')
 }
 
 
@@ -31,9 +33,33 @@ function setup() {
 
     //Start Screen Setup:
     console.log("Start Screen")
-    startButton = new Sprite(400, 200, 350, 60);
-    //Name of game
-    //Start Button
+    startButton = new Sprite(width / 2, height / 2, 1200, 300, 'k');
+    startButton.image = (buttonimg);
+    startButton.scale = 0.25;
+    startButton.text = 'START';
+    startButton.textColor = "#4b965b";
+    startButton.textSize = 30;
+
+    gameName1 = new Sprite(-100, 100, 1200, 300, 'k');
+    gameName1.image = (buttonimg);
+    gameName1.scale = 0.25;
+    gameName1.text = 'JET';
+    gameName1.textColor = "#4b965b";
+    gameName1.textSize = 30;
+    // x was 100 x was 200
+
+    gameName2 = new Sprite(700, 200, 1200, 300, 'k');
+    gameName2.image = (buttonimg);
+    gameName2.scale = 0.25;
+    gameName2.text = 'FIGHTERS';
+    gameName2.textColor = "#4b965b";
+    gameName2.textSize = 30;
+
+
+
+
+    //Name of game - flys in gameName1 gameName2
+    //Start Button - pulsating startButton
     //Keybinds / instructions
 }
 
@@ -249,6 +275,23 @@ function startScreen() {
         gameSetup();
         gameMode = 2;
         return
+    }
+
+    // Name Animation
+    if (gameName1.x < 100) {
+        gameName1.x = gameName1.x + 4;
+    }
+    if (gameName2.x > 200) {
+        gameName2.x = gameName2.x - 10;
+    }
+    if (startButton.scale < 0.28 && buttonAnimation == "small") {
+        startButton.scale = startButton.scale + 0.0006
+        //Start Button - pulsating startButton
+    } else if (startButton.scale > 0.25){
+        startButton.scale = startButton.scale - 0.0006
+        buttonAnimation = "big"
+    } else {
+        buttonAnimation = "small";
     }
 }
 
