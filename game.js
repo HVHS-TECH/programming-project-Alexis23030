@@ -55,12 +55,13 @@ function setup() {
     gameName2.textColor = "#4b965b";
     gameName2.textSize = 30;
 
-    instructions = new Sprite(width/2, 400, 1200, 1200)
+    instructions = new Sprite(width/2, 500, 1600, 1000)
+    instructions.color = "#caf8cd"
     instructions.scale = 0.25;
-    instructions.text = 'FIGHTERS';
+    instructions.text = 'Instructions: \n Player 1 (Red): Left + Right Arrow Keys \n Player 2 (Blue): A + D Keys \n ';
     instructions.textColor = "#4b965b";
-    instructions.textSize = 30;
-    //Keybinds / instructions
+    instructions.textSize = 20;
+    textAlign(LEFT, TOP);
 }
 
 /*******************************************************/
@@ -381,6 +382,7 @@ TO DO:
 ADD INSTRUCTIONS
 ADD NICE EXPLOSIONS
 RESTART FROM GAMESCREEN
+3, 2, 1 Countdown
 */
 
 
