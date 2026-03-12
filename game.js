@@ -8,8 +8,8 @@ let timerScore = 0;
 let maxLives = 20;
 let lives = maxLives;
 let gameMode = 1;
-let width = 600;
-let height = 600;
+const CNV_WIDTH = 600;
+const CNV_HEIGHT = 600;
 let buttonAnimation = "small";
 
 /*******************************************************/
@@ -29,12 +29,12 @@ function preload() {
 /*******************************************************/
 function setup() {
     console.log("Setup");
-    let cnv = createCanvas(width, height + 50);
-    cnv.position((windowWidth / 2) - (width / 2), (windowHeight / 2) - (height / 2))
+    let cnv = createCanvas(CNV_WIDTH, CNV_HEIGHT + 50);
+    cnv.position((windowWidth / 2) - (CNV_WIDTH / 2), (windowHeight / 2) - (CNV_HEIGHT / 2))
 
     //Start Screen Setup:
     console.log("Start Screen")
-    startButton = new Sprite(width / 2, height / 2, 1200, 300, 'k');
+    startButton = new Sprite(CNV_WIDTH / 2, CNV_HEIGHT / 2, 1200, 300, 'k');
     startButton.image = (greenButton);
     startButton.scale = 0.25;
     startButton.text = "START \u25B6";
@@ -55,7 +55,7 @@ function setup() {
     gameName2.textColor = "#4b965b";
     gameName2.textSize = 30;
 
-    instructions = new Sprite(width/2, 500, 1600, 1000)
+    instructions = new Sprite(CNV_WIDTH / 2, 500, 1600, 1000)
     instructions.color = "#caf8cd"
     instructions.scale = 0.25;
     instructions.text = 'Instructions: \n Player 1 (Red): Left + Right Arrow Keys \n Player 2 (Blue): A + D Keys \n ';
@@ -70,10 +70,10 @@ function setup() {
 function gameSetup() {
     console.log("Game Setup")
     allSprites.remove()
-    livesBar = new Sprite(width / 4, 25, width / 2, 50, 'n')
+    livesBar = new Sprite(CNV_WIDTH / 4, 25, CNV_WIDTH / 2, 50, 'n')
     livesBar.color = 'black';
     livesBar.layer = 10;
-    timerBar = new Sprite((width / 4) + (width / 2), 25, width / 2, 50, 'n')
+    timerBar = new Sprite((CNV_WIDTH / 4) + (CNV_WIDTH / 2), 25, CNV_WIDTH / 2, 50, 'n')
     timerBar.color = 'black';
     timerBar.layer = 10;
     timerBar.text = "0";
@@ -93,46 +93,46 @@ function gameOverSetup(_isAlive) {
     allSprites.remove()
     buttonAnimation = "small"
     if (_isAlive == "dead") {
-        deadMessage = new Sprite((width / 2) - 100, 100, 1200, 300, 'n');
+        deadMessage = new Sprite((CNV_WIDTH / 2) - 100, 100, 1200, 300, 'n');
         deadMessage.image = (redButton);
         deadMessage.scale = 0.25;
         deadMessage.text = 'Player 1 Loses!';
         deadMessage.textColor = "#fdeeee";
         deadMessage.textSize = 30;
 
-        deadMessage2 = new Sprite((width / 2), 200, 1200, 300, 'n');
+        deadMessage2 = new Sprite((CNV_WIDTH / 2), 200, 1200, 300, 'n');
         deadMessage2.image = (redButton);
         deadMessage2.scale = 0.25;
         deadMessage2.text = 'You Crashed';
         deadMessage2.textColor = "#fdeeee";
         deadMessage2.textSize = 30;
-        
-        restartButton = new Sprite((width / 2) - 100, (height / 2), 1200, 300, 'k');
+
+        restartButton = new Sprite((CNV_WIDTH / 2) - 100, (CNV_HEIGHT / 2), 1200, 300, 'k');
         restartButton.image = (greenButton);
         restartButton.scale = 0.25;
         restartButton.text = "REPLAY \u25B6";
         restartButton.textColor = "#4b965b";
         restartButton.textSize = 30;
     } else if (_isAlive == "alive") {
-        aliveMessage = new Sprite((width / 2) - 100, 100, 1200, 300, 'n');
+        aliveMessage = new Sprite((CNV_WIDTH / 2) - 100, 100, 1200, 300, 'n');
         aliveMessage.image = (redButton);
         aliveMessage.scale = 0.25;
         aliveMessage.text = 'It took you:';
         aliveMessage.textColor = "#fdeeee";
         aliveMessage.textSize = 30;
-        aliveMessage2 = new Sprite((width / 2), 200, 1200, 300, 'n');
+        aliveMessage2 = new Sprite((CNV_WIDTH / 2), 200, 1200, 300, 'n');
         aliveMessage2.image = (redButton);
         aliveMessage2.scale = 0.25;
         aliveMessage2.text = timerScore + ' secs';
         aliveMessage2.textColor = "#fdeeee";
         aliveMessage2.textSize = 30;
-        aliveMessage3 = new Sprite((width / 2) + 100, 300, 1200, 300, 'n');
+        aliveMessage3 = new Sprite((CNV_WIDTH / 2) + 100, 300, 1200, 300, 'n');
         aliveMessage3.image = (redButton);
         aliveMessage3.scale = 0.25;
         aliveMessage3.text = 'To eliminate player 2!';
         aliveMessage3.textColor = "#fdeeee";
         aliveMessage3.textSize = 30;
-        restartButton = new Sprite((width / 2) - 100, (height / 2) + 100, 1200, 300, 'k');
+        restartButton = new Sprite((CNV_WIDTH / 2) - 100, (CNV_HEIGHT / 2) + 100, 1200, 300, 'k');
         restartButton.image = (greenButton);
         restartButton.scale = 0.25;
         restartButton.text = "REPLAY \u25B6";
@@ -147,7 +147,7 @@ function gameOverSetup(_isAlive) {
 /*******************************************************/
 function createPlayer1() {
     console.log("createPlayer1");
-    player1 = new Sprite(width - 100, height - 100, 30, 30, 'd')
+    player1 = new Sprite(CNV_WIDTH - 100, CNV_HEIGHT - 100, 30, 30, 'd')
     player1.image = (player1img);
     player1.scale = 50 / player1img.width;
     player1.direction = -90;
@@ -192,12 +192,12 @@ function player1Movement() {
 
     //Wraps the player if they go off screen
     if (player1.x < 0) {
-        player1.x = width;
-    } else if (player1.x > width) {
+        player1.x = CNV_WIDTH;
+    } else if (player1.x > CNV_WIDTH) {
         player1.x = 0;
     } else if (player1.y < 50) {
-        player1.y = height;
-    } else if (player1.y > height) {
+        player1.y = CNV_HEIGHT;
+    } else if (player1.y > CNV_HEIGHT) {
         player1.y = 50;
     }
 }
@@ -218,12 +218,12 @@ function player2Movement() {
 
     //Wraps the player if they go off screen
     if (player2.x < 0) {
-        player2.x = width;
-    } else if (player2.x > width) {
+        player2.x = CNV_WIDTH;
+    } else if (player2.x > CNV_WIDTH) {
         player2.x = 0;
     } else if (player2.y < 50) {
-        player2.y = height;
-    } else if (player2.y > height) {
+        player2.y = CNV_HEIGHT;
+    } else if (player2.y > CNV_HEIGHT) {
         player2.y = 50;
     }
 }
@@ -280,11 +280,11 @@ function gameLoop() {
     projectileGroup.forEach(sprite => {
         if (sprite.x < 0) {
             sprite.remove()
-        } else if (sprite.x > width) {
+        } else if (sprite.x > CNV_WIDTH) {
             sprite.remove()
         } else if (sprite.y < 0) {
             sprite.remove()
-        } else if (sprite.y > height) {
+        } else if (sprite.y > CNV_HEIGHT) {
             sprite.remove()
         }
     });
