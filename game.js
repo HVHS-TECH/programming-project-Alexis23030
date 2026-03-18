@@ -5,7 +5,7 @@
 /*******************************************************/
 
 let timerScore = 0;
-let maxLives = 20;
+let maxLives = 10;
 let lives = maxLives;
 let gameMode = 1;
 const CNV_WIDTH = 600;
@@ -19,8 +19,9 @@ function preload() {
     console.log("Preload");
     player1img = loadImage('images/player1.png');
     player2img = loadImage('images/player2.png');
-    greenButton = loadImage('images/greenButton.png')
-    redButton = loadImage('images/redButton.png')
+    greenButton = loadImage('images/greenButton.png');
+    redButton = loadImage('images/redButton.png');
+    restartIMG = loadImage('images/restartIcon.png');
 }
 
 
@@ -30,10 +31,10 @@ function preload() {
 function setup() {
     console.log("Setup");
     let cnv = createCanvas(CNV_WIDTH, CNV_HEIGHT + 50);
-    cnv.position((windowWidth / 2) - (CNV_WIDTH / 2), (windowHeight / 2) - (CNV_HEIGHT / 2))
+    cnv.position((windowWidth / 2) - (CNV_WIDTH / 2), (windowHeight / 2) - (CNV_HEIGHT / 2));
 
     //Start Screen Setup:
-    console.log("Start Screen")
+    console.log("Start Screen");
     startButton = new Sprite(CNV_WIDTH / 2, CNV_HEIGHT / 2, 1200, 300, 'k');
     startButton.image = (greenButton);
     startButton.scale = 0.25;
@@ -55,10 +56,10 @@ function setup() {
     gameName2.textColor = "#4b965b";
     gameName2.textSize = 30;
 
-    instructions = new Sprite(CNV_WIDTH / 2, 500, 1600, 1000)
-    instructions.color = "#caf8cd"
+    instructions = new Sprite(CNV_WIDTH / 2, 500, 1600, 1000);
+    instructions.color = "#caf8cd";
     instructions.scale = 0.25;
-    instructions.text = 'Instructions: \n Player 1 (Red): Left + Right Arrow Keys \n Player 2 (Blue): A + D Keys \n ';
+    instructions.text = 'Instructions: \n Player 1 (Red): Left + Right Arrow Keys \n Player 1 Space to Shoot \n Player 2 (Blue): A + D Keys \n\n The aim is for Player 1 (Red) \n to shoot Player 2 (Blue) until \nthey lose all their lives ';
     instructions.textColor = "#4b965b";
     instructions.textSize = 20;
     textAlign(LEFT, TOP);
@@ -68,37 +69,43 @@ function setup() {
 // gameSetup()
 /*******************************************************/
 function gameSetup() {
-    console.log("Game Setup")
-    allSprites.remove()
-    livesBar = new Sprite(CNV_WIDTH / 4, 25, CNV_WIDTH / 2, 50, 'n')
+    console.log("Game Setup");
+    allSprites.remove();
+    livesBar = new Sprite(CNV_WIDTH / 4, 25, CNV_WIDTH / 2, 50, 'n');
     livesBar.color = 'black';
     livesBar.layer = 10;
-    timerBar = new Sprite((CNV_WIDTH / 4) + (CNV_WIDTH / 2), 25, CNV_WIDTH / 2, 50, 'n')
+    livesBar.strokeWeight = 0;
+    timerBar = new Sprite((CNV_WIDTH / 4) + (CNV_WIDTH / 2), 25, CNV_WIDTH / 2, 50, 'n');
     timerBar.color = 'black';
     timerBar.layer = 10;
     timerBar.text = "0";
+    timerBar.strokeWeight = 0;
+    restartIcon = new Sprite((CNV_WIDTH - 30), 30, 500, 500, 'k');
+    restartIcon.image = (restartIMG);
+    restartIcon.scale = 0.06;
+    restartIcon.layer = 11;
     lives = maxLives;
     createPlayer1();
     createPlayer2();
     projectileGroup = new Group();
     frameRate(60);
-    startFrame = frameCount / 60
+    startFrame = frameCount / 60;
 }
 
 /*******************************************************/
 // gameOverSetup()
 /*******************************************************/
 function gameOverSetup(_isAlive) {
-    console.log("Game Over Screen")
-    allSprites.remove()
-    buttonAnimation = "small"
+    console.log("Game Over Screen");
+    allSprites.remove();
+    buttonAnimation = "small";
     if (_isAlive == "dead") {
         deadMessage = new Sprite((CNV_WIDTH / 2) - 100, 100, 1200, 300, 'n');
         deadMessage.image = (redButton);
         deadMessage.scale = 0.25;
-        deadMessage.text = 'Player 1 Loses!';
+        deadMessage.text = 'Player 1 Loses! Score: ' + timerScore;
         deadMessage.textColor = "#fdeeee";
-        deadMessage.textSize = 30;
+        deadMessage.textSize = 25;
 
         deadMessage2 = new Sprite((CNV_WIDTH / 2), 200, 1200, 300, 'n');
         deadMessage2.image = (redButton);
@@ -147,12 +154,12 @@ function gameOverSetup(_isAlive) {
 /*******************************************************/
 function createPlayer1() {
     console.log("createPlayer1");
-    player1 = new Sprite(CNV_WIDTH - 100, CNV_HEIGHT - 100, 30, 30, 'd')
+    player1 = new Sprite(CNV_WIDTH - 100, CNV_HEIGHT - 100, 30, 30, 'd');
     player1.image = (player1img);
     player1.scale = 50 / player1img.width;
     player1.direction = -90;
     player1.rotation = 0;
-    player1.collider = 'd'
+    player1.collider = 'd';
     player1.w = 30;
     player1.h = 30;
     player1.layer = 5;
@@ -164,12 +171,12 @@ function createPlayer1() {
 /*******************************************************/
 function createPlayer2() {
     console.log("createPlayer2");
-    player2 = new Sprite(100, 150, 30, 30, 'd')
+    player2 = new Sprite(100, 150, 30, 30, 'd');
     player2.image = (player2img);
     player2.scale = 50 / player2img.width;
     player2.direction = -90;
     player2.rotation = 0;
-    player2.collider = 'd'
+    player2.collider = 'd';
     player2.w = 30;
     player2.h = 30;
     player2.layer = 5;
@@ -180,14 +187,13 @@ function createPlayer2() {
 // player1Movement()
 /*******************************************************/
 function player1Movement() {
-    if (kb.pressed('arrowUp')) {
-        player1.speed = 3
-    } else if (kb.pressing('arrowLeft')) {
-        player1.direction = player1.direction - 2
-        player1.rotation = player1.rotation - 2
+    player1.speed = 3;
+    if (kb.pressing('arrowLeft')) {
+        player1.direction = player1.direction - 2;
+        player1.rotation = player1.rotation - 2;
     } else if (kb.pressing('arrowRight')) {
-        player1.direction = player1.direction + 2
-        player1.rotation = player1.rotation + 2
+        player1.direction = player1.direction + 2;
+        player1.rotation = player1.rotation + 2;
     }
 
     //Wraps the player if they go off screen
@@ -206,14 +212,13 @@ function player1Movement() {
 // player2Movement()
 /*******************************************************/
 function player2Movement() {
-    if (kb.pressed('w')) {
-        player2.speed = 3
-    } else if (kb.pressing('a')) {
-        player2.direction = player2.direction - 2
-        player2.rotation = player2.rotation - 2
+    player2.speed = 3;
+    if (kb.pressing('a')) {
+        player2.direction = player2.direction - 2;
+        player2.rotation = player2.rotation - 2;
     } else if (kb.pressing('d')) {
-        player2.direction = player2.direction + 2
-        player2.rotation = player2.rotation + 2
+        player2.direction = player2.direction + 2;
+        player2.rotation = player2.rotation + 2;
     }
 
     //Wraps the player if they go off screen
@@ -232,9 +237,9 @@ function player2Movement() {
 // createProjectile()
 /*******************************************************/
 function createProjectile() {
-    let projectile = new Sprite(player1.x, player1.y, 2, 4, 'd')
-    projectile.direction = player1.direction
-    projectile.rotation = player1.rotation
+    let projectile = new Sprite(player1.x, player1.y, 2, 4, 'd');
+    projectile.direction = player1.direction;
+    projectile.rotation = player1.rotation;
     projectile.speed = 8;
     projectile.color = 'black';
     projectile.layer = 2;
@@ -245,9 +250,16 @@ function createProjectile() {
 // removeProjectile()
 /*******************************************************/
 function removeProjectile(_projectile) {
-    lives = lives - 1
-    console.log("lives: " + lives)
-    _projectile.remove()
+    lives = lives - 1;
+    console.log("lives: " + lives);
+    for (let i = 0; i < 5; i++) {
+        particle = new Sprite(_projectile.x, _projectile.y, 1, 1, 'n');
+        particle.color = 'black';
+        particle.direction = random(-180, 180);
+        particle.rotation = particle.direction;
+        particle.speed = 10;
+    }
+    _projectile.remove();
 }
 
 /*******************************************************/
@@ -257,7 +269,7 @@ function livesDisplay() {
     livesBar.text = "Lives: " + lives;
     livesBar.textColor = 'white';
     livesBar.textSize = 20;
-    timerScore = Math.floor((frameCount / 60) - startFrame)
+    timerScore = Math.floor(((frameCount / 60) - startFrame));
     timerBar.text = 'Time: ' + timerScore;
     timerBar.textColor = "White";
     timerBar.textSize = 20;
@@ -273,19 +285,26 @@ function gameLoop() {
     player1Movement();
     player2Movement();
 
+    if (restartIcon.mouse.pressed()) {
+        console.log("Game ReStarting");
+        gameSetup();
+        gameMode = 2;
+        return;
+    }
+
     if (kb.pressed('space')) {
         createProjectile();
     }
 
     projectileGroup.forEach(sprite => {
         if (sprite.x < 0) {
-            sprite.remove()
+            sprite.remove();
         } else if (sprite.x > CNV_WIDTH) {
-            sprite.remove()
+            sprite.remove();
         } else if (sprite.y < 0) {
-            sprite.remove()
+            sprite.remove();
         } else if (sprite.y > CNV_HEIGHT) {
-            sprite.remove()
+            sprite.remove();
         }
     });
 
@@ -293,18 +312,20 @@ function gameLoop() {
     projectileGroup.overlaps(player1);
 
     if (player1.collides(player2)) {
+        timerScore = 0;
         gameOverSetup("dead");
         gameMode = 3;
-        return
+        return;
     }
     livesDisplay();
 
     if (lives <= 0) {
-        console.log("GAME OVER")
+        console.log("GAME OVER");
         gameOverSetup("alive");
         gameMode = 3;
-        return
+        return;
     }
+
 
 }
 
@@ -317,7 +338,7 @@ function startScreen() {
         console.log("Game Starting");
         gameSetup();
         gameMode = 2;
-        return
+        return;
     }
 
     // Name Animation
@@ -328,11 +349,11 @@ function startScreen() {
         gameName2.x = gameName2.x - 10;
     }
     if (startButton.scale < 0.28 && buttonAnimation == "small") {
-        startButton.scale = startButton.scale + 0.0006
+        startButton.scale = startButton.scale + 0.0006;
         //Start Button - pulsating startButton
     } else if (startButton.scale > 0.25) {
-        startButton.scale = startButton.scale - 0.0006
-        buttonAnimation = "big"
+        startButton.scale = startButton.scale - 0.0006;
+        buttonAnimation = "big";
     } else {
         buttonAnimation = "small";
     }
@@ -348,15 +369,15 @@ function gameOver() {
         console.log("Game Restarting");
         gameSetup(maxLives);
         gameMode = 2;
-        return
+        return;
     }
     // Restart Animation
     if (restartButton.scale < 0.28 && buttonAnimation == "small") {
-        restartButton.scale = restartButton.scale + 0.0006
+        restartButton.scale = restartButton.scale + 0.0006;
         //Start Button - pulsating startButton
     } else if (restartButton.scale > 0.25) {
-        restartButton.scale = restartButton.scale - 0.0006
-        buttonAnimation = "big"
+        restartButton.scale = restartButton.scale - 0.0006;
+        buttonAnimation = "big";
     } else {
         buttonAnimation = "small";
     }
@@ -379,10 +400,7 @@ function draw() {
 
 /*
 TO DO:
-ADD INSTRUCTIONS
-ADD NICE EXPLOSIONS
-RESTART FROM GAMESCREEN
-3, 2, 1 Countdown
+More Comments
 */
 
 
