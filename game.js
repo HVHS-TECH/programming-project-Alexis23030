@@ -8,8 +8,8 @@ let timerScore = 0;
 let maxLives = 10;
 let lives = maxLives;
 let gameMode = 1;
-const CNV_WIDTH = 600;
-const CNV_HEIGHT = 600;
+const CNV_WIDTH = 700;
+const CNV_HEIGHT = 700;
 let buttonAnimation = "small";
 
 /*******************************************************/
@@ -20,6 +20,7 @@ function preload() {
     player1img = loadImage('images/player1.png');
     player2img = loadImage('images/player2.png');
     greenButton = loadImage('images/greenButton.png');
+    blueButton = loadImage('images/blueButton.png');
     redButton = loadImage('images/redButton.png');
     restartIMG = loadImage('images/restartIcon.png');
 }
@@ -43,17 +44,17 @@ function setup() {
     startButton.textSize = 30;
 
     gameName1 = new Sprite(-100, 100, 1200, 300, 'k');
-    gameName1.image = (greenButton);
+    gameName1.image = (blueButton);
     gameName1.scale = 0.25;
     gameName1.text = 'JET';
-    gameName1.textColor = "#4b965b";
+    gameName1.textColor = "#eef0fd";
     gameName1.textSize = 30;
 
     gameName2 = new Sprite(700, 200, 1200, 300, 'k');
-    gameName2.image = (greenButton);
+    gameName2.image = (redButton);
     gameName2.scale = 0.25;
     gameName2.text = 'FIGHTERS';
-    gameName2.textColor = "#4b965b";
+    gameName2.textColor = "#fdeeee";
     gameName2.textSize = 30;
 
     instructions = new Sprite(CNV_WIDTH / 2, 500, 1600, 1000);
@@ -80,10 +81,11 @@ function gameSetup() {
     timerBar.layer = 10;
     timerBar.text = "0";
     timerBar.strokeWeight = 0;
-    restartIcon = new Sprite((CNV_WIDTH - 30), 30, 500, 500, 'k');
+    restartIcon = new Sprite((CNV_WIDTH - 30), 30, 500, 500, 's');
     restartIcon.image = (restartIMG);
     restartIcon.scale = 0.06;
     restartIcon.layer = 11;
+    restartIcon.overlaps(allSprites)
     lives = maxLives;
     createPlayer1();
     createPlayer2();
@@ -401,6 +403,7 @@ function draw() {
 /*
 TO DO:
 More Comments
+Bot player 2
 */
 
 
