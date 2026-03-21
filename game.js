@@ -11,6 +11,9 @@ let gameMode = 1;
 const CNV_WIDTH = 700;
 const CNV_HEIGHT = 700;
 let buttonAnimation = "small";
+let buttonAnimation1P = "small";
+let buttonAnimationRestart = "small";
+let twoPlayer = false;
 
 /*******************************************************/
 // preload()
@@ -36,12 +39,7 @@ function setup() {
 
     //Start Screen Setup:
     console.log("Start Screen");
-    startButton = new Sprite(CNV_WIDTH / 2, CNV_HEIGHT / 2, 1200, 300, 'k');
-    startButton.image = (greenButton);
-    startButton.scale = 0.25;
-    startButton.text = "START \u25B6";
-    startButton.textColor = "#4b965b";
-    startButton.textSize = 30;
+
 
     gameName1 = new Sprite(-100, 100, 1200, 300, 'k');
     gameName1.image = (blueButton);
@@ -56,6 +54,20 @@ function setup() {
     gameName2.text = 'FIGHTERS';
     gameName2.textColor = "#fdeeee";
     gameName2.textSize = 30;
+
+    startButton1Player = new Sprite(CNV_WIDTH / 2, 300, 1200, 300, 'k');
+    startButton1Player.image = (greenButton);
+    startButton1Player.scale = 0.25;
+    startButton1Player.text = "1 PLAYER START \u25B6";
+    startButton1Player.textColor = "#4b965b";
+    startButton1Player.textSize = 30;
+
+    startButton = new Sprite(CNV_WIDTH / 2, 400, 1200, 300, 'k');
+    startButton.image = (greenButton);
+    startButton.scale = 0.25;
+    startButton.text = "2 PLAYER START \u25B6";
+    startButton.textColor = "#4b965b";
+    startButton.textSize = 30;
 
     instructions = new Sprite(CNV_WIDTH / 2, 500, 1600, 1000);
     instructions.color = "#caf8cd";
@@ -101,6 +113,8 @@ function gameOverSetup(_isAlive) {
     console.log("Game Over Screen");
     allSprites.remove();
     buttonAnimation = "small";
+    buttonAnimation1P = "small"
+    buttonAnimationRestart = "small"
     if (_isAlive == "dead") {
         deadMessage = new Sprite((CNV_WIDTH / 2) - 100, 100, 1200, 300, 'n');
         deadMessage.image = (redButton);
@@ -191,12 +205,11 @@ function createPlayer2() {
 function player1Movement() {
     player1.speed = 3;
     if (kb.pressing('arrowLeft')) {
-        player1.direction = player1.direction - 2;
-        player1.rotation = player1.rotation - 2;
+        player1.direction = Math.floor(player1.direction - 2);
     } else if (kb.pressing('arrowRight')) {
-        player1.direction = player1.direction + 2;
-        player1.rotation = player1.rotation + 2;
+        player1.direction = Math.floor(player1.direction + 2);
     }
+    player1.rotation = player1.direction - 270;
 
     //Wraps the player if they go off screen
     if (player1.x < 0) {
@@ -213,15 +226,27 @@ function player1Movement() {
 /*******************************************************/
 // player2Movement()
 /*******************************************************/
-function player2Movement() {
+function player2Movement(_isBot) {
     player2.speed = 3;
-    if (kb.pressing('a')) {
-        player2.direction = player2.direction - 2;
-        player2.rotation = player2.rotation - 2;
-    } else if (kb.pressing('d')) {
-        player2.direction = player2.direction + 2;
-        player2.rotation = player2.rotation + 2;
+    if (_isBot) {
+        if (Math.floor(player2.direction) != (Math.floor(player1.direction) - 180) && Math.floor(player1.direction) < 0) {
+            player2.direction = Math.floor(player2.direction - 1);
+        } else if (Math.floor(player2.direction) != (Math.floor(player1.direction) - 180) && Math.floor(player1.direction) > 0) {
+            player2.direction = Math.floor(player2.direction + 1);
+        }
+    } else {
+        if (kb.pressing('a')) {
+            player2.direction = player2.direction - 2;
+            player2.rotation = player2.rotation - 2;
+        } else if (kb.pressing('d')) {
+            player2.direction = player2.direction + 2;
+            player2.rotation = player2.rotation + 2;
+        }
     }
+
+    player2.rotation = player2.direction - 270;
+
+
 
     //Wraps the player if they go off screen
     if (player2.x < 0) {
@@ -285,7 +310,12 @@ function gameLoop() {
 
     background('white');
     player1Movement();
-    player2Movement();
+    if (twoPlayer) {
+        player2Movement(false);
+    } else {
+        player2Movement(true);
+    }
+
 
     if (restartIcon.mouse.pressed()) {
         console.log("Game ReStarting");
@@ -338,11 +368,18 @@ function startScreen() {
     background('white');
     if (startButton.mouse.pressed()) {
         console.log("Game Starting");
+        twoPlayer = true;
         gameSetup();
         gameMode = 2;
         return;
     }
-
+    if (startButton1Player.mouse.pressed()) {
+        console.log("Game Starting");
+        twoPlayer = false;
+        gameSetup();
+        gameMode = 2;
+        return;
+    }
     // Name Animation
     if (gameName1.x < 100) {
         gameName1.x = gameName1.x + 4;
@@ -350,6 +387,7 @@ function startScreen() {
     if (gameName2.x > 200) {
         gameName2.x = gameName2.x - 10;
     }
+
     if (startButton.scale < 0.28 && buttonAnimation == "small") {
         startButton.scale = startButton.scale + 0.0006;
         //Start Button - pulsating startButton
@@ -358,6 +396,16 @@ function startScreen() {
         buttonAnimation = "big";
     } else {
         buttonAnimation = "small";
+    }
+
+    if (startButton1Player.scale < 0.28 && buttonAnimation1P == "small") {
+        startButton1Player.scale = startButton1Player.scale + 0.0006;
+        //Start Button - pulsating startButton
+    } else if (startButton1Player.scale > 0.25) {
+        startButton1Player.scale = startButton1Player.scale - 0.0006;
+        buttonAnimation1P = "big";
+    } else {
+        buttonAnimation1P = "small";
     }
 }
 
@@ -369,19 +417,19 @@ function gameOver() {
     background('white');
     if (restartButton.mouse.pressed()) {
         console.log("Game Restarting");
-        gameSetup(maxLives);
+        gameSetup();
         gameMode = 2;
         return;
     }
     // Restart Animation
-    if (restartButton.scale < 0.28 && buttonAnimation == "small") {
+    if (restartButton.scale < 0.28 && buttonAnimationRestart == "small") {
         restartButton.scale = restartButton.scale + 0.0006;
         //Start Button - pulsating startButton
     } else if (restartButton.scale > 0.25) {
         restartButton.scale = restartButton.scale - 0.0006;
-        buttonAnimation = "big";
+        buttonAnimationRestart = "big";
     } else {
-        buttonAnimation = "small";
+        buttonAnimationRestart = "small";
     }
 }
 
@@ -403,7 +451,6 @@ function draw() {
 /*
 TO DO:
 More Comments
-Bot player 2
 */
 
 
