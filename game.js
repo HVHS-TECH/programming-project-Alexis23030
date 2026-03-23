@@ -7,21 +7,26 @@
 //All other files and content used in the program were created by me.
 /*******************************************************/
 
-let timerScore = 0;
-let maxLives = 10;
-let lives = maxLives;
-let gameMode = 1;
+//Initialise all global variables and consts
 const CNV_WIDTH = 700;
 const CNV_HEIGHT = 700;
-let buttonAnimation = "small";
-let buttonAnimation1P = "small";
-let buttonAnimationRestart = "small";
-let twoPlayer = false;
+const MAX_LIVES = 10;
+let lives = MAX_LIVES;
+let timerScore = 0;
+let gameMode = 1; //Start Screen
+let twoPlayer; //Boolean whether the game is Two Player or One Player
+
+//Setup Button Animations
+let buttonAnimation = "small"; //2P Game Button
+let buttonAnimation1P = "small"; //1P Game Button
+let buttonAnimationRestart = "small"; //Restart Game Button
+
 
 /*******************************************************/
 // preload()
 /*******************************************************/
 function preload() {
+    //Preloads all of the required image files
     console.log("Preload");
     player1img = loadImage('images/player1.png');
     player2img = loadImage('images/player2.png');
@@ -36,14 +41,11 @@ function preload() {
 // setup()
 /*******************************************************/
 function setup() {
-    console.log("Setup");
     let cnv = createCanvas(CNV_WIDTH, CNV_HEIGHT + 50);
-    cnv.position((windowWidth / 2) - (CNV_WIDTH / 2), (windowHeight / 2) - (CNV_HEIGHT / 2));
+    cnv.position((windowWidth / 2) - (CNV_WIDTH / 2), (windowHeight / 2) - (CNV_HEIGHT / 2)); //Centers canvas in screen
+    frameRate(60);
 
-    //Start Screen Setup:
-    console.log("Start Screen");
-
-
+    //Start Screen Text 1
     gameName1 = new Sprite(-100, 100, 1200, 300, 'k');
     gameName1.image = (blueButton);
     gameName1.scale = 0.25;
@@ -51,6 +53,7 @@ function setup() {
     gameName1.textColor = "#eef0fd";
     gameName1.textSize = 30;
 
+    //Start Screen Text 2
     gameName2 = new Sprite(700, 200, 1200, 300, 'k');
     gameName2.image = (redButton);
     gameName2.scale = 0.25;
@@ -58,6 +61,7 @@ function setup() {
     gameName2.textColor = "#fdeeee";
     gameName2.textSize = 30;
 
+    //1 Player Start Button
     startButton1Player = new Sprite(CNV_WIDTH / 2, 300, 1200, 300, 'k');
     startButton1Player.image = (greenButton);
     startButton1Player.scale = 0.25;
@@ -65,6 +69,7 @@ function setup() {
     startButton1Player.textColor = "#4b965b";
     startButton1Player.textSize = 30;
 
+    //2 Player Start Button
     startButton = new Sprite(CNV_WIDTH / 2, 400, 1200, 300, 'k');
     startButton.image = (greenButton);
     startButton.scale = 0.25;
@@ -72,53 +77,66 @@ function setup() {
     startButton.textColor = "#4b965b";
     startButton.textSize = 30;
 
+    //Game Instructions
     instructions = new Sprite(CNV_WIDTH / 2, 500, 1600, 1000);
     instructions.color = "#caf8cd";
     instructions.scale = 0.25;
     instructions.text = 'Instructions: \n Player 1 (Red): Left + Right Arrow Keys \n Player 1 Space to Shoot \n Player 2 (Blue): A + D Keys \n\n The aim is for Player 1 (Red) \n to shoot Player 2 (Blue) until \nthey lose all their lives ';
     instructions.textColor = "#4b965b";
     instructions.textSize = 20;
-    textAlign(LEFT, TOP);
 }
 
 /*******************************************************/
 // gameSetup()
 /*******************************************************/
 function gameSetup() {
-    console.log("Game Setup");
+    //Resets Canvas
     allSprites.remove();
+
+    //Creates Top Info Bar, Lives display
     livesBar = new Sprite(CNV_WIDTH / 4, 25, CNV_WIDTH / 2, 50, 'n');
     livesBar.color = 'black';
     livesBar.layer = 10;
     livesBar.strokeWeight = 0;
+
+    //Creates Top Info Bar, Timer display
     timerBar = new Sprite((CNV_WIDTH / 4) + (CNV_WIDTH / 2), 25, CNV_WIDTH / 2, 50, 'n');
     timerBar.color = 'black';
     timerBar.layer = 10;
     timerBar.text = "0";
     timerBar.strokeWeight = 0;
+
+    //Creates Top Info Bar, Restart Icon + Button
     restartIcon = new Sprite((CNV_WIDTH - 30), 30, 500, 500, 's');
     restartIcon.image = (restartIMG);
     restartIcon.scale = 0.06;
     restartIcon.layer = 11;
-    restartIcon.overlaps(allSprites)
-    lives = maxLives;
+    restartIcon.overlaps(allSprites); //No sprites can collide with the icon
+
+    //Creates Player 1 + Player 2, Projectile Group
     createPlayer1();
     createPlayer2();
     projectileGroup = new Group();
-    frameRate(60);
+
+    //Sets game start frame for timer, Sets lives to max lives
     startFrame = frameCount / 60;
+    lives = MAX_LIVES;
 }
 
 /*******************************************************/
 // gameOverSetup()
 /*******************************************************/
 function gameOverSetup(_isAlive) {
-    console.log("Game Over Screen");
+    //Resets Canvas + Button animations
     allSprites.remove();
     buttonAnimation = "small";
     buttonAnimation1P = "small"
     buttonAnimationRestart = "small"
+
+    //If Player 1 dies (Player 1 + 2 collided) when game ends, then show collision version of End Screen 
+    //If Player 1 is alive when game ends, then show P1 Wins + Score version of End Screen
     if (_isAlive == "dead") {
+        //End Screen Text 1 With Score With message you lose
         deadMessage = new Sprite((CNV_WIDTH / 2) - 100, 100, 1200, 300, 'n');
         deadMessage.image = (redButton);
         deadMessage.scale = 0.25;
@@ -126,6 +144,7 @@ function gameOverSetup(_isAlive) {
         deadMessage.textColor = "#fdeeee";
         deadMessage.textSize = 25;
 
+        //End Screen Text 2 With Score With message you crashed
         deadMessage2 = new Sprite((CNV_WIDTH / 2), 200, 1200, 300, 'n');
         deadMessage2.image = (redButton);
         deadMessage2.scale = 0.25;
@@ -133,6 +152,7 @@ function gameOverSetup(_isAlive) {
         deadMessage2.textColor = "#fdeeee";
         deadMessage2.textSize = 30;
 
+        //Restart Button
         restartButton = new Sprite((CNV_WIDTH / 2) - 100, (CNV_HEIGHT / 2), 1200, 300, 'k');
         restartButton.image = (greenButton);
         restartButton.scale = 0.25;
@@ -140,24 +160,31 @@ function gameOverSetup(_isAlive) {
         restartButton.textColor = "#4b965b";
         restartButton.textSize = 30;
     } else if (_isAlive == "alive") {
+        //End Screen Text 1
         aliveMessage = new Sprite((CNV_WIDTH / 2) - 100, 100, 1200, 300, 'n');
         aliveMessage.image = (redButton);
         aliveMessage.scale = 0.25;
         aliveMessage.text = 'It took you:';
         aliveMessage.textColor = "#fdeeee";
         aliveMessage.textSize = 30;
+
+        //End Screen Text 2 with score
         aliveMessage2 = new Sprite((CNV_WIDTH / 2), 200, 1200, 300, 'n');
         aliveMessage2.image = (redButton);
         aliveMessage2.scale = 0.25;
         aliveMessage2.text = timerScore + ' secs';
         aliveMessage2.textColor = "#fdeeee";
         aliveMessage2.textSize = 30;
+
+        //End Screen Text 3
         aliveMessage3 = new Sprite((CNV_WIDTH / 2) + 100, 300, 1200, 300, 'n');
         aliveMessage3.image = (redButton);
         aliveMessage3.scale = 0.25;
         aliveMessage3.text = 'To eliminate player 2!';
         aliveMessage3.textColor = "#fdeeee";
         aliveMessage3.textSize = 30;
+
+        //Restart Button
         restartButton = new Sprite((CNV_WIDTH / 2) - 100, (CNV_HEIGHT / 2) + 100, 1200, 300, 'k');
         restartButton.image = (greenButton);
         restartButton.scale = 0.25;
@@ -172,7 +199,7 @@ function gameOverSetup(_isAlive) {
 // createPlayer1()
 /*******************************************************/
 function createPlayer1() {
-    console.log("createPlayer1");
+    //Creates Player 1, gives image, sets size + direction
     player1 = new Sprite(CNV_WIDTH - 100, CNV_HEIGHT - 100, 30, 30, 'd');
     player1.image = (player1img);
     player1.scale = 50 / player1img.width;
@@ -189,7 +216,7 @@ function createPlayer1() {
 // createPlayer2()
 /*******************************************************/
 function createPlayer2() {
-    console.log("createPlayer2");
+    //Creates Player 2, gives image, sets size + direction
     player2 = new Sprite(100, 150, 30, 30, 'd');
     player2.image = (player2img);
     player2.scale = 50 / player2img.width;
