@@ -209,6 +209,7 @@ function createPlayer1() {
     player1.w = 30;
     player1.h = 30;
     player1.layer = 5;
+    player1.speed = 3;
 }
 
 
@@ -226,6 +227,7 @@ function createPlayer2() {
     player2.w = 30;
     player2.h = 30;
     player2.layer = 5;
+    player2.speed = 3;
 }
 
 
@@ -233,7 +235,7 @@ function createPlayer2() {
 // player1Movement()
 /*******************************************************/
 function player1Movement() {
-    player1.speed = 3;
+    //Player 1 Arrow Key Rotation
     if (kb.pressing('arrowLeft')) {
         player1.direction = Math.floor(player1.direction - 2);
     } else if (kb.pressing('arrowRight')) {
@@ -241,7 +243,7 @@ function player1Movement() {
     }
     player1.rotation = player1.direction - 270;
 
-    //Wraps the player if they go off screen
+    //Wraps the player if they go off screen, exactly opposite
     if (player1.x < 0) {
         player1.x = CNV_WIDTH;
     } else if (player1.x > CNV_WIDTH) {
@@ -257,7 +259,6 @@ function player1Movement() {
 // player2Movement()
 /*******************************************************/
 function player2Movement(_isBot) {
-    player2.speed = 3;
     if (_isBot) {
         if (Math.floor(player2.direction) != (Math.floor(player1.direction) - 180) && Math.floor(player1.direction) < 0) {
             player2.direction = Math.floor(player2.direction - 1);
@@ -265,12 +266,12 @@ function player2Movement(_isBot) {
             player2.direction = Math.floor(player2.direction + 1);
         }
     } else {
+        //Player 2 Arrow Key Rotation
         if (kb.pressing('a')) {
             player2.direction = player2.direction - 2;
-            player2.rotation = player2.rotation - 2;
         } else if (kb.pressing('d')) {
             player2.direction = player2.direction + 2;
-            player2.rotation = player2.rotation + 2;
+
         }
     }
 
