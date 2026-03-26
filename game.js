@@ -27,7 +27,6 @@ let buttonAnimationRestart = "small"; //Restart Game Button
 /*******************************************************/
 function preload() {
     //Preloads all of the required image files
-    console.log("Preload");
     player1img = loadImage('images/player1.png');
     player2img = loadImage('images/player2.png');
     greenButton = loadImage('images/greenButton.png');
@@ -88,6 +87,7 @@ function setup() {
 
 /*******************************************************/
 // gameSetup()
+// Runs when file loads, sets up canvas and start screen
 /*******************************************************/
 function gameSetup() {
     //Resets Canvas
@@ -125,6 +125,7 @@ function gameSetup() {
 
 /*******************************************************/
 // gameOverSetup()
+// Runs at the start of game over, sets up the game over screen
 /*******************************************************/
 function gameOverSetup(_isAlive) {
     //Resets Canvas + Button animations
@@ -260,6 +261,7 @@ function player1Movement() {
 /*******************************************************/
 function player2Movement(_isBot) {
     if (_isBot) {
+        //Bot movement for player 2. If P2 direction is not exact opposite of P1, then turn to face that direction.
         if (Math.floor(player2.direction) != (Math.floor(player1.direction) - 180) && Math.floor(player1.direction) < 0) {
             player2.direction = Math.floor(player2.direction - 1);
         } else if (Math.floor(player2.direction) != (Math.floor(player1.direction) - 180) && Math.floor(player1.direction) > 0) {
@@ -277,9 +279,7 @@ function player2Movement(_isBot) {
 
     player2.rotation = player2.direction - 270;
 
-
-
-    //Wraps the player if they go off screen
+    //Wraps the player if they go off screen, exactly opposite
     if (player2.x < 0) {
         player2.x = CNV_WIDTH;
     } else if (player2.x > CNV_WIDTH) {
@@ -295,6 +295,7 @@ function player2Movement(_isBot) {
 // createProjectile()
 /*******************************************************/
 function createProjectile() {
+    //Creates projectile at P1 x, y, direction, and then fires off in that direction
     let projectile = new Sprite(player1.x, player1.y, 2, 4, 'd');
     projectile.direction = player1.direction;
     projectile.rotation = player1.rotation;
@@ -308,8 +309,9 @@ function createProjectile() {
 // removeProjectile()
 /*******************************************************/
 function removeProjectile(_projectile) {
-    lives = lives - 1;
-    console.log("lives: " + lives);
+    //When Projectile collides with Player 2
+    lives -= 1;
+    //Creates particle affect, 5 particles at projectile x, y, random direction, fires off in that direction
     for (let i = 0; i < 5; i++) {
         particle = new Sprite(_projectile.x, _projectile.y, 1, 1, 'n');
         particle.color = 'black';
@@ -317,6 +319,7 @@ function removeProjectile(_projectile) {
         particle.rotation = particle.direction;
         particle.speed = 10;
     }
+    //Removes Projectile
     _projectile.remove();
 }
 
@@ -324,6 +327,7 @@ function removeProjectile(_projectile) {
 // livesDisplay()
 /*******************************************************/
 function livesDisplay() {
+    //Draw Loop for the Top Bar Display. Includes Lives and Timer
     livesBar.text = "Lives: " + lives;
     livesBar.textColor = 'white';
     livesBar.textSize = 20;
@@ -338,27 +342,30 @@ function livesDisplay() {
 // gameLoop()
 /*******************************************************/
 function gameLoop() {
-
     background('white');
+
+    //General Movement functions
     player1Movement();
+
     if (twoPlayer) {
         player2Movement(false);
     } else {
         player2Movement(true);
     }
 
-
+    //Restart Icon on Game Screen 
     if (restartIcon.mouse.pressed()) {
-        console.log("Game ReStarting");
         gameSetup();
-        gameMode = 2;
+        gameMode = 2; //Game Mode
         return;
     }
 
+    //Projectile Firing from P1
     if (kb.pressed('space')) {
         createProjectile();
     }
 
+    //Wraps projectile if they go off screen, exactly opposite
     projectileGroup.forEach(sprite => {
         if (sprite.x < 0) {
             sprite.remove();
@@ -371,21 +378,25 @@ function gameLoop() {
         }
     });
 
+    //If the projectile overlaps Player 2, remove it, if it overlaps with Player 1 dont do anything
     projectileGroup.overlaps(player2, removeProjectile);
     projectileGroup.overlaps(player1);
 
+    //If the two players collide together, end game
     if (player1.collides(player2)) {
         timerScore = 0;
         gameOverSetup("dead");
-        gameMode = 3;
+        gameMode = 3; //End Game Mode
         return;
     }
+
+    //Run the top bar display
     livesDisplay();
 
+    //Ends the game if lives <=0
     if (lives <= 0) {
-        console.log("GAME OVER");
         gameOverSetup("alive");
-        gameMode = 3;
+        gameMode = 3; //End Game Mode
         return;
     }
 
@@ -394,24 +405,29 @@ function gameLoop() {
 
 /*******************************************************/
 // startScreen()
+// Start screen draw loop
 /*******************************************************/
 function startScreen() {
     background('white');
+
+    //If Start Button 2 Player pressed then start game with Two Players
     if (startButton.mouse.pressed()) {
-        console.log("Game Starting");
         twoPlayer = true;
         gameSetup();
-        gameMode = 2;
+        gameMode = 2; //Game Mode
         return;
     }
+
+    //If Start Button 1 Player pressed then start game with One Player
     if (startButton1Player.mouse.pressed()) {
-        console.log("Game Starting");
         twoPlayer = false;
         gameSetup();
-        gameMode = 2;
+        gameMode = 2; //Game Mode
         return;
     }
-    // Name Animation
+
+
+    // Name Animation - Two sprites slide into position
     if (gameName1.x < 100) {
         gameName1.x = gameName1.x + 4;
     }
@@ -419,9 +435,9 @@ function startScreen() {
         gameName2.x = gameName2.x - 10;
     }
 
+    //Start Button - pulsating startButton for 2 Player
     if (startButton.scale < 0.28 && buttonAnimation == "small") {
         startButton.scale = startButton.scale + 0.0006;
-        //Start Button - pulsating startButton
     } else if (startButton.scale > 0.25) {
         startButton.scale = startButton.scale - 0.0006;
         buttonAnimation = "big";
@@ -429,9 +445,10 @@ function startScreen() {
         buttonAnimation = "small";
     }
 
+
+    //Start Button - pulsating startButton for 1 Player
     if (startButton1Player.scale < 0.28 && buttonAnimation1P == "small") {
         startButton1Player.scale = startButton1Player.scale + 0.0006;
-        //Start Button - pulsating startButton
     } else if (startButton1Player.scale > 0.25) {
         startButton1Player.scale = startButton1Player.scale - 0.0006;
         buttonAnimation1P = "big";
@@ -440,22 +457,22 @@ function startScreen() {
     }
 }
 
-
 /*******************************************************/
 // gameOver()
+// End screen draw loop
 /*******************************************************/
 function gameOver() {
     background('white');
+    //If Restart Button pressed, then restart game
     if (restartButton.mouse.pressed()) {
-        console.log("Game Restarting");
         gameSetup();
-        gameMode = 2;
+        gameMode = 2; //Game Mode
         return;
     }
-    // Restart Animation
+
+    // Restart Animation - pulsating Restart Button
     if (restartButton.scale < 0.28 && buttonAnimationRestart == "small") {
         restartButton.scale = restartButton.scale + 0.0006;
-        //Start Button - pulsating startButton
     } else if (restartButton.scale > 0.25) {
         restartButton.scale = restartButton.scale - 0.0006;
         buttonAnimationRestart = "big";
@@ -477,15 +494,6 @@ function draw() {
     }
 
 }
-
-
-/*
-TO DO:
-More Comments
-*/
-
-
-
 
 /*******************************************************/
 //  END OF game.js
